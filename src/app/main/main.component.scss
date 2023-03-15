@@ -1,0 +1,32 @@
+.main {
+  height: 100vh;
+  overflow: hidden;
+  .square {
+    width: 30px;
+    height: 80px;
+    background: red;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    z-index: 999;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    img {
+      width: 100%;
+      height: 80px;
+      cursor: pointer;
+      transition: 0.5s;
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+  }
+  .pic {
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+}
