@@ -6,5 +6,10 @@ import { Component } from '@angular/core';
   styleUrls: ['./main.component.scss']
 })
 export class MainComponent {
+  reddisonHotel: boolean = false;
+  getHotel() {
+    this.reddisonHotel = !this.reddisonHotel;
+  }
 
 }
+

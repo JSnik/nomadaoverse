@@ -1,16 +1,31 @@
-import {AfterViewInit, Component, HostListener, OnInit} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  RendererFactory2,
+  ViewChild
+} from '@angular/core';
 // @ts-ignore
 const pako = require('pako')
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 // @ts-ignore
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
+// @ts-ignore
+import { BoundingBoxHelper } from 'three/examples/jsm/helpers/BoundingBoxHelper';
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
+import {TextureLoader} from "three";
 @Component({
   selector: 'app-hotel-view',
   templateUrl: './hotel-view.component.html',
   styleUrls: ['./hotel-view.component.scss']
 })
-export class HotelViewComponent implements OnInit, AfterViewInit{
+export class HotelViewComponent implements OnInit, AfterViewInit, OnDestroy{
+  private canvas: HTMLCanvasElement;
+  isLoaded: boolean = true;
   public scene: THREE.Scene;
   public camera: THREE.PerspectiveCamera;
   public renderer: THREE.WebGLRenderer;
@@ -27,6 +42,8 @@ export class HotelViewComponent implements OnInit, AfterViewInit{
   private isMouseDown = false;
   private model: THREE.Object3D;
 
+  constructor(private rendererFactory: RendererFactory2) {
+  }
   ngOnInit() {
     this.scene = new THREE.Scene();
     // Create the camera
@@ -50,17 +67,30 @@ export class HotelViewComponent implements OnInit, AfterViewInit{
     document.addEventListener('mouseup', () => {
       this.isMouseDown = false;
     });
+
+    ///
   }
 
   ngAfterViewInit() {
     const loader = new GLTFLoader();
-    const url = '../assets/new/report.gltf';
+    const prodUrl = '../assets/new/report.gltf'
+    const url = '../assets/product2/Main.gltf';
 
     loader.setMeshoptDecoder(MeshoptDecoder);
-    loader.load(url, (gltf: any) => {
+    loader.load(prodUrl, (gltf: any) => {
       // Add the model to the scene
+      this.isLoaded = false;
       this.model = gltf.scene;
+      // const axesHelper = new THREE.AxesHelper(5);
+      // this.scene.add(axesHelper);
+      //
+      // const boundingBoxHelper = new THREE.BoundingBoxHelper(this.model, 0xff0000);
+      // this.scene.add(boundingBoxHelper);
+      // boundingBoxHelper.update();
+      // boundingBoxHelper.position.copy(this.model.position);
+
       this.scene.add(this.model);
+
     }, undefined, (error: any) => {
       console.error(error);
     });
@@ -78,6 +108,7 @@ export class HotelViewComponent implements OnInit, AfterViewInit{
     // Adjust the camera position and lookAt target
     this.camera.position.set(0, 8, 0);
     this.camera.lookAt(new THREE.Vector3(0, 8, 50));
+
 
     setTimeout(() => {
       this.animate();
@@ -109,11 +140,15 @@ export class HotelViewComponent implements OnInit, AfterViewInit{
     if (this.keyboardControls.down && this.camera.position.y > 3) {
       this.camera.position.y -= moveSpeed;
     }
-    if (this.keyboardControls.w && this.camera.position.z < widthBoundarySize ) {
+    //  && this.camera.position.z < 30
+    if (this.keyboardControls.w) {
       // this.camera.position.z += moveSpeed;
+      // console.log(this.camera.position.z)
+      console.log(forward)
       this.camera.position.add(forward.multiplyScalar(moveSpeed))
     }
-    if (this.keyboardControls.s && this.camera.position.z > -widthBoundarySize) {
+    // && this.camera.position.z > -widthBoundarySize
+    if (this.keyboardControls.s) {
       // this.camera.position.z -= moveSpeed;
       const backward = forward.clone().negate();
       this.camera.position.add(backward.multiplyScalar(moveSpeed))
@@ -184,7 +219,25 @@ export class HotelViewComponent implements OnInit, AfterViewInit{
     }
   }
 
-  constructor() {
+  destroyThree() {
+    // this.canvas.remove();
 
+    this.renderer.dispose();
+
+    this.scene.traverse((object) => {
+      if (object instanceof THREE.Mesh) {
+        object.geometry.dispose();
+        if (Array.isArray(object.material)) {
+          object.material.forEach((m) => m.dispose());
+        } else {
+          object.material.dispose();
+        }
+      }
+    });
   }
+
+  ngOnDestroy() {
+    this.destroyThree();
+  }
+
 }
