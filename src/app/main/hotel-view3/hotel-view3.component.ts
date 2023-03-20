@@ -18,12 +18,13 @@ import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.j
 import { BoundingBoxHelper } from 'three/examples/jsm/helpers/BoundingBoxHelper';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import {TextureLoader} from "three";
+
 @Component({
-  selector: 'app-hotel-view',
-  templateUrl: './hotel-view.component.html',
-  styleUrls: ['./hotel-view.component.scss']
+  selector: 'app-hotel-view3',
+  templateUrl: './hotel-view3.component.html',
+  styleUrls: ['./hotel-view3.component.scss']
 })
-export class HotelViewComponent implements OnInit, AfterViewInit, OnDestroy{
+export class HotelView3Component implements OnInit, AfterViewInit, OnDestroy{
   private canvas: HTMLCanvasElement;
   isLoaded: boolean = true;
   public scene: THREE.Scene;
@@ -73,10 +74,10 @@ export class HotelViewComponent implements OnInit, AfterViewInit, OnDestroy{
 
   ngAfterViewInit() {
     const loader = new GLTFLoader();
-    const prodUrl = '../assets/new/report.gltf'
+    const url = '../assets/new3/Main.gltf';
 
     loader.setMeshoptDecoder(MeshoptDecoder);
-    loader.load(prodUrl, (gltf: any) => {
+    loader.load(url, (gltf: any) => {
       // Add the model to the scene
       this.isLoaded = false;
       this.model = gltf.scene;
@@ -230,5 +231,4 @@ export class HotelViewComponent implements OnInit, AfterViewInit, OnDestroy{
   ngOnDestroy() {
     this.destroyThree();
   }
-
 }
