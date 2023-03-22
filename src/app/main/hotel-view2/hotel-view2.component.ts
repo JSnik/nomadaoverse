@@ -212,20 +212,11 @@ export class HotelView2Component  implements OnInit, AfterViewInit, OnDestroy{
   }
 
   destroyThree() {
-    // this.canvas.remove();
+    const rendererCanvas = this.renderer.domElement;
+    rendererCanvas.parentNode!.removeChild(rendererCanvas);
 
+    // Dispose the renderer instance
     this.renderer.dispose();
-
-    this.scene.traverse((object) => {
-      if (object instanceof THREE.Mesh) {
-        object.geometry.dispose();
-        if (Array.isArray(object.material)) {
-          object.material.forEach((m) => m.dispose());
-        } else {
-          object.material.dispose();
-        }
-      }
-    });
   }
 
   ngOnDestroy() {
