@@ -1,29 +1,16 @@
-import {
-  AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef,
-  Component,
-  ElementRef,
-  HostListener,
-  OnDestroy,
-  OnInit,
-  RendererFactory2,
-  ViewChild
-} from '@angular/core';
+import {AfterViewInit, Component, HostListener, OnDestroy, OnInit, RendererFactory2} from '@angular/core';
+import * as THREE from "three";
+import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 // @ts-ignore
-const pako = require('pako')
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-// @ts-ignore
-import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
-// @ts-ignore
-import { BoundingBoxHelper } from 'three/examples/jsm/helpers/BoundingBoxHelper';
-import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
-import {TextureLoader} from "three";
+import {MeshoptDecoder} from "three/examples/jsm/libs/meshopt_decoder.module";
+
 @Component({
-  selector: 'app-hotel-view',
-  templateUrl: './hotel-view.component.html',
-  styleUrls: ['./hotel-view.component.scss'],
+  selector: 'app-hotel-view-first-ground',
+  templateUrl: './hotel-view-first-ground.component.html',
+  styleUrls: ['./hotel-view-first-ground.component.scss']
 })
-export class HotelViewComponent implements OnInit, AfterViewInit, OnDestroy{
+export class HotelViewFirstGroundComponent implements OnInit, AfterViewInit, OnDestroy{
+  private canvas: HTMLCanvasElement;
   isLoaded: boolean = true;
   public scene: THREE.Scene;
   public camera: THREE.PerspectiveCamera;
@@ -41,7 +28,7 @@ export class HotelViewComponent implements OnInit, AfterViewInit, OnDestroy{
   private isMouseDown = false;
   private model: THREE.Object3D;
 
-  constructor() {
+  constructor(private rendererFactory: RendererFactory2) {
   }
   ngOnInit() {
     this.scene = new THREE.Scene();
@@ -66,15 +53,16 @@ export class HotelViewComponent implements OnInit, AfterViewInit, OnDestroy{
     document.addEventListener('mouseup', () => {
       this.isMouseDown = false;
     });
+
     ///
   }
 
   ngAfterViewInit() {
     const loader = new GLTFLoader();
-    const prodUrl = '../assets/new/report.gltf'
+    const url = '../assets/first-grade/Main.gltf';
 
     loader.setMeshoptDecoder(MeshoptDecoder);
-    loader.load(prodUrl, (gltf: any) => {
+    loader.load(url, (gltf: any) => {
       // Add the model to the scene
       this.isLoaded = false;
       this.model = gltf.scene;
@@ -101,7 +89,7 @@ export class HotelViewComponent implements OnInit, AfterViewInit, OnDestroy{
 
     setTimeout(() => {
       this.animate();
-    }, 100)
+    }, )
   }
   // saba
   animate() {
@@ -115,7 +103,6 @@ export class HotelViewComponent implements OnInit, AfterViewInit, OnDestroy{
 
     const forward = new THREE.Vector3(0,0,-1);
     forward.applyQuaternion(this.camera.quaternion);
-    const backward = forward.clone().negate();
 
     // if (this.keyboardControls.left && this.camera.position.x < 55) {
     //   this.camera.position.x += moveSpeed;
@@ -123,42 +110,28 @@ export class HotelViewComponent implements OnInit, AfterViewInit, OnDestroy{
     // if (this.keyboardControls.right && this.camera.position.x > -z) {
     //   this.camera.position.x -= moveSpeed;
     // }
-    const raycaster = new THREE.Raycaster(this.camera.position, forward);
-    const intersects = raycaster.intersectObjects(this.scene.children, true);
-    if (intersects.length > 0) {
-      const firstIntersect = intersects[0];
-      const distance = firstIntersect.distance;
-      if (distance < 2) { // adjust this value to your liking
-        // don't move the camera forward
-        forward.multiplyScalar(0);
-        backward.multiplyScalar(0);
-      }
-    }
 
-    if (this.keyboardControls.up) {
+    if (this.keyboardControls.up ) {
       this.camera.position.y += moveSpeed;
     }
-    if (this.keyboardControls.down && this.camera.position.y > 1) {
+    if (this.keyboardControls.down) {
       this.camera.position.y -= moveSpeed;
     }
-    console.log(this.camera.position.y)
+    //  && this.camera.position.z < 30
     if (this.keyboardControls.w) {
       // this.camera.position.z += moveSpeed;
       // console.log(this.camera.position.z)
+      console.log(forward)
       this.camera.position.add(forward.multiplyScalar(moveSpeed))
     }
     // && this.camera.position.z > -widthBoundarySize
     if (this.keyboardControls.s) {
       // this.camera.position.z -= moveSpeed;
+      const backward = forward.clone().negate();
       this.camera.position.add(backward.multiplyScalar(moveSpeed))
     }
 
-    // Clamp camera position within boundaries
-    this.camera.position.x = THREE.MathUtils.clamp(this.camera.position.x, -z, 55);
-    this.camera.position.y = THREE.MathUtils.clamp(this.camera.position.y, -heightBoundarySize, heightBoundarySize);
-    this.camera.position.z = THREE.MathUtils.clamp(this.camera.position.z, -widthBoundarySize, widthBoundarySize);
 
-    // console.log(forward)
     // Update the scene
     this.scene.rotation.y += 0.0000000001;
 
@@ -234,5 +207,4 @@ export class HotelViewComponent implements OnInit, AfterViewInit, OnDestroy{
   ngOnDestroy() {
     this.destroyThree();
   }
-
 }

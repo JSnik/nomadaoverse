@@ -4,6 +4,7 @@ import {MainComponent} from "./main/main.component";
 import {HotelViewComponent} from "./main/hotel-view/hotel-view.component";
 import {HotelView2Component} from "./main/hotel-view2/hotel-view2.component";
 import {HotelView3Component} from "./main/hotel-view3/hotel-view3.component";
+import {HotelViewFirstGroundComponent} from "./main/hotel-view-first-ground/hotel-view-first-ground.component";
 
 const routes: Routes = [
   {
@@ -21,6 +22,10 @@ const routes: Routes = [
   {
     path: 'pool-big',
     component: HotelView3Component
+  },
+  {
+    path: 'first-level',
+    component: HotelViewFirstGroundComponent
   }
 ];
 

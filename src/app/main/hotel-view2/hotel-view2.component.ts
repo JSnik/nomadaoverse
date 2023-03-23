@@ -98,8 +98,8 @@ export class HotelView2Component  implements OnInit, AfterViewInit, OnDestroy{
     this.scene.add(pointLight);
 
     // Adjust the camera position and lookAt target
-    this.camera.position.set(0, 8, 0);
-    this.camera.lookAt(new THREE.Vector3(0, 8, 50));
+    this.camera.position.set(0, 28, 0);
+    this.camera.lookAt(new THREE.Vector3(0, 28, 50));
 
 
     setTimeout(() => {
@@ -112,12 +112,13 @@ export class HotelView2Component  implements OnInit, AfterViewInit, OnDestroy{
 
     // Move the camera based on keyboard input
     const moveSpeed = 1;
-    const widthBoundarySize = 28;
-    const heightBoundarySize = 33;
+    const widthBoundarySize = 50;
+    const heightBoundarySize = 53;
     const z = 45;
 
     const forward = new THREE.Vector3(0,0,-1);
     forward.applyQuaternion(this.camera.quaternion);
+    const backward = forward.clone().negate();
 
     // if (this.keyboardControls.left && this.camera.position.x < 55) {
     //   this.camera.position.x += moveSpeed;
@@ -125,11 +126,22 @@ export class HotelView2Component  implements OnInit, AfterViewInit, OnDestroy{
     // if (this.keyboardControls.right && this.camera.position.x > -z) {
     //   this.camera.position.x -= moveSpeed;
     // }
+    // const raycaster = new THREE.Raycaster(this.camera.position, forward);
+    // const intersects = raycaster.intersectObjects(this.scene.children, true);
+    // if (intersects.length > 0) {
+    //   const firstIntersect = intersects[0];
+    //   const distance = firstIntersect.distance;
+    //   if (distance < 2) { // adjust this value to your liking
+    //     // don't move the camera forward
+    //     forward.multiplyScalar(0);
+    //     backward.multiplyScalar(0);
+    //   }
+    // }
 
     if (this.keyboardControls.up ) {
       this.camera.position.y += moveSpeed;
     }
-    if (this.keyboardControls.down) {
+    if (this.keyboardControls.down && this.camera.position.y > 15) {
       this.camera.position.y -= moveSpeed;
     }
     //  && this.camera.position.z < 30
@@ -142,10 +154,14 @@ export class HotelView2Component  implements OnInit, AfterViewInit, OnDestroy{
     // && this.camera.position.z > -widthBoundarySize
     if (this.keyboardControls.s) {
       // this.camera.position.z -= moveSpeed;
-      const backward = forward.clone().negate();
       this.camera.position.add(backward.multiplyScalar(moveSpeed))
     }
 
+    // Clamp camera position within boundaries
+    // this.camera.position.x = THREE.MathUtils.clamp(this.camera.position.x, -z, 55);
+    // this.camera.position.y = THREE.MathUtils.clamp(this.camera.position.y, -heightBoundarySize, heightBoundarySize);
+    // this.camera.position.z = THREE.MathUtils.clamp(this.camera.position.z, -widthBoundarySize, widthBoundarySize);
+    //
 
     // Update the scene
     this.scene.rotation.y += 0.0000000001;
